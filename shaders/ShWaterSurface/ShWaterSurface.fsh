@@ -64,7 +64,7 @@ vec4 getCubeMapColor(vec3 dir){
         dirOnCube = dir / dir.x;
         
         //Calculate location on the face from remaining vector components and rescale them to fit surface orientation.
-        uv = vec2(dirOnCube.y, -sign(dir.x) * dirOnCube.z);
+        uv = vec2(dirOnCube.y, sign(dir.x) * dirOnCube.z);
         
         //Select cube map surface sampler from max component's sign (i.e. do we hit the face in fron or behind?)
         samplerIndex = dir.x < 0.0 ? 1 : 0;
@@ -73,7 +73,7 @@ vec4 getCubeMapColor(vec3 dir){
         dirOnCube = dir / dir.y;
         
         //Calculate location on the face from remaining vector components and rescale them to fit surface orientation.
-        uv = vec2(-dirOnCube.x, -sign(dir.y) * dirOnCube.z);
+        uv = vec2(-dirOnCube.x, sign(dir.y) * dirOnCube.z);
         
         //Select cube map surface sampler from max component's sign (i.e. do we hit the face in fron or behind?)
         samplerIndex = dir.y < 0.0 ? 3 : 2;
@@ -82,7 +82,7 @@ vec4 getCubeMapColor(vec3 dir){
         dirOnCube = dir / dir.z;
         
         //Calculate location on the face from remaining vector components and rescale them to fit surface orientation.
-        uv = vec2(-dirOnCube.x, sign(dir.z) * dirOnCube.y);
+        uv = vec2(-dirOnCube.x, -sign(dir.z) * dirOnCube.y);
         
         //Select cube map surface sampler from max component's sign (i.e. do we hit the face in fron or behind?)
         samplerIndex = dir.z < 0.0 ? 5 : 4;
@@ -174,8 +174,8 @@ void main()
 	normal = normalize(normal);
 	
 	// REFLECTIONS
-	vec3 normal_view = (ufView * vec4(normal, 0.0)).xyz;
-	vec4 reflected = vec4(normalize(reflect(-v_vViewPosition.xyz, normal_view)), 0.0);
+	vec3 normal_view = normalize((ufView * vec4(normal, 0.0)).xyz);
+	vec4 reflected = vec4(normalize(reflect(v_vViewPosition.xyz, normal_view)), 0.0);
 	float d_min = 0.0;
 	float maxInterval = 512.0;
 	float interval = maxInterval;
@@ -185,17 +185,18 @@ void main()
 	float sampledDepth = 0.0;
 	float currentDepth = 0.0;
 	
-	while(interval > 1.0){
+	while(interval > 0.00001){
+		current = v_vViewPosition + (d_min + interval * 0.5) * reflected;
 		sampledDepth = sampleDepth(viewSpaceToScreen(current));
 		currentDepth = viewSpaceToLinDepth(current);
 		if (sampledDepth > currentDepth){
 			d_min += 0.5 * interval;
 		}
 		interval *= 0.5;
-		current = v_vViewPosition + (d_min + interval * 0.5) * reflected;
 	}
 	
 	vec4 reflectColor = sampleAlbedo(viewSpaceToScreen(current));
+	//reflectColor = vec4(d_min / 512.0, 0.0, 0.0, 1.0);
 	
 	if (reflectColor.a < 1.0 || sampledDepth < viewSpaceToLinDepth(v_vViewPosition)){
 		reflectColor = getCubeMapColor((ufInvView * reflected).xyz);
@@ -229,7 +230,7 @@ void main()
 	float ambient = 0.7;	
 	float diffuse = 0.3;
 	float specular = 0.2;
-	float alpha = 200.0;
+	float alpha = 50.0;
 	
 	color *= ambient;
 	

@@ -26,12 +26,12 @@ function ScrSetShWaterSurface(){
 	shader_set_uniform_f_array(shader_get_uniform(ShWaterSurface, "ufInvView"), invView)
 	
 	// CUBE MAP SKY REFLECTIONS                     ... the sprite subimage mappings are (and will remain) a mess ...
-	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap0"), sprite_get_texture(SprSkybox, 3))
-	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap1"), sprite_get_texture(SprSkybox, 4))
-	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap2"), sprite_get_texture(SprSkybox, 2))
-	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap3"), sprite_get_texture(SprSkybox, 0))
-	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap4"), sprite_get_texture(SprSkybox, 5))
-	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap5"), sprite_get_texture(SprSkybox, 1))
+	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap0"), sprite_get_texture(SprSkybox, 4))
+	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap1"), sprite_get_texture(SprSkybox, 3))
+	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap2"), sprite_get_texture(SprSkybox, 0))
+	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap3"), sprite_get_texture(SprSkybox, 2))
+	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap4"), sprite_get_texture(SprSkybox, 1))
+	texture_set_stage(shader_get_sampler_index(ShWaterSurface, "cubeMap5"), sprite_get_texture(SprSkybox, 5))
 	
 	// DEPTH AND ALBEDO
 	shader_set_uniform_f(shader_get_uniform(ShWaterSurface, "uCameraFar"), camFar)

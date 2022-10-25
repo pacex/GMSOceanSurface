@@ -1,6 +1,8 @@
 /// @description Albedo Render Pass
 
 shader_set(ShTurbine)
+shader_set_uniform_f(shader_get_uniform(ShTurbine, "camFar"), camFar)
+shader_set_uniform_f_array(shader_get_uniform(ShTurbine, "proj"), projection)
 
 // Base
 vertex_submit(model_base, pr_trianglelist, texture_base)
