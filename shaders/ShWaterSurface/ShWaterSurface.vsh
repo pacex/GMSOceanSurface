@@ -44,7 +44,7 @@ void main()
 		
 		float amp = uAmplitudes[i];
 		float km = length(wave_direction);
-		float h = 1000000.0;
+		float h = 1000000.0; // unused
 		float theta = sqrt(km * G) * // Angular frequency
 			PI * 0.001 * uTime + // Time (converted to seconds)
 			(wave_direction.x * v_vWorldPositionInitial.x + wave_direction.y * v_vWorldPositionInitial.y); // Space

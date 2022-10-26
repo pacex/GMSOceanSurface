@@ -5,8 +5,8 @@
 varying vec4 v_vWorldPositionInitial; // World space position of the fragment if there was no wave displacement
 varying vec4 v_vViewPosition; // View space position of the fragment after displacement
 varying vec4 v_vPosition; // World space position of the fragment after displacement
-varying vec2 v_vTexcoord;
-varying vec4 v_vColour;
+varying vec2 v_vTexcoord; // unused
+varying vec4 v_vColour; // unused
 varying float v_vLinDepth; // Linearized depth value
 
 uniform float ufTime; // Time in ms
@@ -16,10 +16,9 @@ uniform float ufAmplitudes[NUM_WAVES];
 uniform float ufKx[NUM_WAVES];
 uniform float ufKy[NUM_WAVES];
 
-// Lighting parameters
+// Matrices
 uniform mat4 ufView;
 uniform mat4 ufProj;
-
 uniform mat4 ufInvView;
 
 // Depth and Albedo
@@ -39,7 +38,7 @@ uniform sampler2D cubeMap3;
 uniform sampler2D cubeMap4;
 uniform sampler2D cubeMap5;
 
-//Function to find largest component of vec3. returns 0 for x, 1 for y, 2 for z
+// Function to find largest component of vec3. returns 0 for x, 1 for y, 2 for z
 int argmax3 (vec3 v){
     return v.y > v.x ? ( v.z > v.y ? 2 : 1 ) : ( v.z > v.x ? 2 : 0 );
 }
@@ -157,7 +156,7 @@ void main()
 		float theta = sqrt(length(wave_direction) * G) * 0.001 * PI * ufTime + // Time
 			(wave_direction.x * v_vWorldPositionInitial.x + wave_direction.y * v_vWorldPositionInitial.y); // Space
 		
-		// Calculate tangent and bitangtent by displacement derivatives
+		// Calculate tangent and bitangtent by displacement partial derivatives
 		vec3 tangent = vec3(1.0 - amp * wave_direction.x * wave_direction.x * cos(theta),
 						-amp * wave_direction.x * wave_direction.y * cos(theta),
 						amp * wave_direction.x * -sin(theta) * normal_strength);
@@ -174,8 +173,12 @@ void main()
 	normal = normalize(normal);
 	
 	// REFLECTIONS
+	
+	// reflect camera incident vector by normal (view space)
 	vec3 normal_view = normalize((ufView * vec4(normal, 0.0)).xyz);
 	vec4 reflected = vec4(normalize(reflect(v_vViewPosition.xyz, normal_view)), 0.0);
+	
+	// screen space reflections (scene geometry)
 	float d_min = 0.0;
 	float maxInterval = 512.0;
 	float interval = maxInterval;
@@ -199,11 +202,13 @@ void main()
 	//reflectColor = vec4(d_min / 512.0, 0.0, 0.0, 1.0);
 	
 	if (reflectColor.a < 1.0 || sampledDepth < viewSpaceToLinDepth(v_vViewPosition)){
+		// reflection of background using skybox cube map sampled by reflected camera incident vector (world space)
 		reflectColor = getCubeMapColor((ufInvView * reflected).xyz);
 	}
 	
 	
-	// BASE COLOR
+	// COLOR MIXING
+	// mix base color by camera incident angle (steep angle -> less reflection)
 	vec3 baseColor = mix(reflectColor.rgb, vec3(0.388, 0.529, 0.945), pow(abs(dot(normalize(-v_vViewPosition.xyz), normal_view)), 0.7));
 
 	vec2 screenPos = viewSpaceToScreen(ufView * v_vPosition);
@@ -237,7 +242,7 @@ void main()
 	color += diffuse * dotNonNeg(normal, light_direction_world) * baseColor + specular * pow(dotNonNeg(normalize(-v_vViewPosition.xyz), normalize(reflected_view)), alpha);
 	
 	
-	
+	// OUTPUT
 	
     //gl_FragColor = vec4(normal*0.5 + vec3(0.5), 1.0);
 	gl_FragColor = vec4(color, 1.0);

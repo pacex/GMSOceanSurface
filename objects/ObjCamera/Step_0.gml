@@ -42,7 +42,8 @@ z += up * spd/2
 view = matrix_build_lookat(x,y,z,  // from
 			x + look[0], y + look[1], z + look[2], // to
 			0,0,-1) // up
-			
+
+// Calculate inverse view matrix
 invView = InverseMat4(view);
 			
 camera_set_view_mat(view_camera[0], view)
