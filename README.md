@@ -23,3 +23,8 @@ Features include:
 - Right click + drag to turn the camera
 - [U] to update wave functions
 - [G] to toggle GUI
+
+To change the number of wave functions sampled from the spectrum, change the `NUM_WAVES` parameter on the CPU side as well as in BOTH the vertex and fragment shader!
+
+## Notes
+Discrete sampling of the wave spectrum is not ideal. Using an FFT to retrieve vertex displacements from the wave spectrum is far more efficient and provides better visual results. Due to time constraints I was unable to implement this until the contest deadline, but it will remain the main goal for this project.
