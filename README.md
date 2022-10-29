@@ -26,5 +26,8 @@ Features include:
 
 To change the number of wave functions sampled from the spectrum, change the `NUM_WAVES` parameter on the CPU side as well as in BOTH the vertex and fragment shader!
 
-## Notes
+## Future Work
 Discrete sampling of the wave spectrum is not ideal. Using an FFT to retrieve vertex displacements from the wave spectrum is far more efficient and provides better visual results. Due to time constraints I was unable to implement this until the contest deadline, but it will remain the main goal for this project.
+
+[Boundary awareness](https://onlinelibrary.wiley.com/doi/abs/10.1111/cgf.14100?casa_token=7Xvtq25r1EgAAAAA:ppvNE30gOQ1n_iHbdYtJkyprjr0Z1_aNPfnx4pFVUgcPhsbLyrzPNKTmRY-dbJ9iBQyx4CneEA_UUGM) of waves adds substantially to visual appearance.
+This is another aspect I aim to work on in the future.
