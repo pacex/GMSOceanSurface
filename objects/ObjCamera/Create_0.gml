@@ -39,3 +39,7 @@ albedoSurface = surface_create(window_get_width(), window_get_height())
 globalvar vertexBufferFormat, vertexBufferFormatModel;
 vertexBufferFormat = ScrVertBufFormatDefault()
 vertexBufferFormatModel = ScrVertBufFormatModel()
+
+// GUI
+globalvar enableGUI;
+enableGUI = true

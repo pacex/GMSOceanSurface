@@ -1,6 +1,6 @@
 /// @description Behaviour
 
-if(mouse_check_button_pressed(mb_left)){
+if(mouse_check_button_pressed(mb_left) && enableGUI){
 	var mx = window_mouse_get_x()
 	var my = window_mouse_get_y()
 	
