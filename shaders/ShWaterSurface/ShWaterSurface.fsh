@@ -16,6 +16,11 @@ uniform float ufAmplitudes[NUM_WAVES];
 uniform float ufKx[NUM_WAVES];
 uniform float ufKy[NUM_WAVES];
 
+// Reflection parameters
+uniform int ufBinary;
+uniform float ufRayMarchDistance;
+uniform float ufRayMarchStep;
+
 // Matrices
 uniform mat4 ufView;
 uniform mat4 ufProj;
@@ -179,30 +184,55 @@ void main()
 	vec4 reflected = vec4(normalize(reflect(v_vViewPosition.xyz, normal_view)), 0.0);
 	
 	// screen space reflections (scene geometry)
+	
+	// binary search along the ray
 	float d_min = 0.0;
-	float maxInterval = 512.0;
+	float maxInterval = ufRayMarchDistance;
 	float interval = maxInterval;
 	
+	bool binary = ufBinary == 1; // True: use binary search along reflected ray
+	
 	vec4 current = v_vViewPosition + (d_min + interval * 0.5) * reflected;
-	current.w = 1.0;
 	float sampledDepth = 0.0;
 	float currentDepth = 0.0;
 	
-	while(interval > 0.00001){
-		current = v_vViewPosition + (d_min + interval * 0.5) * reflected;
+	if (binary){
+		while(interval > ufRayMarchStep){
+			current = v_vViewPosition + (d_min + interval * 0.5) * reflected;
+			sampledDepth = sampleDepth(viewSpaceToScreen(current));
+			currentDepth = viewSpaceToLinDepth(current);
+			if (sampledDepth > currentDepth){
+				d_min += 0.5 * interval;
+			}
+			interval *= 0.5;
+		}
+	}
+	
+	// linear raymarching
+	
+	bool noHit = false;
+	
+	if (!binary){
+		current = v_vViewPosition;
 		sampledDepth = sampleDepth(viewSpaceToScreen(current));
 		currentDepth = viewSpaceToLinDepth(current);
-		if (sampledDepth > currentDepth){
-			d_min += 0.5 * interval;
+		float dist = 0.0;
+		while(currentDepth < sampledDepth){
+			dist += ufRayMarchStep; // Ray march step size
+			current = v_vViewPosition + dist * reflected;
+			sampledDepth = sampleDepth(viewSpaceToScreen(current));
+			currentDepth = viewSpaceToLinDepth(current);
+			if (dist > ufRayMarchDistance){ // Maximum ray march distance
+				noHit = true;
+				break;
+			}
 		}
-		interval *= 0.5;
 	}
 	
 	vec4 reflectColor = sampleAlbedo(viewSpaceToScreen(current));
-	//reflectColor = vec4(d_min / 512.0, 0.0, 0.0, 1.0);
 	
-	if (reflectColor.a < 1.0 || sampledDepth < viewSpaceToLinDepth(v_vViewPosition)){
-		// reflection of background using skybox cube map sampled by reflected camera incident vector (world space)
+	if (reflectColor.a < 1.0 || sampledDepth >= ufCameraFar || sampledDepth < currentDepth - 2.0 / ufCameraFar || sampledDepth < viewSpaceToLinDepth(v_vViewPosition) || noHit){
+		// reflection of background geometry using skybox cube map sampled by reflected camera incident vector (world space)
 		reflectColor = getCubeMapColor((ufInvView * reflected).xyz);
 	}
 	

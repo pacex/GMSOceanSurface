@@ -33,9 +33,9 @@ var right = keyboard_check(ord("D")) - keyboard_check(ord("A"))
 var forward = keyboard_check(ord("W")) - keyboard_check(ord("S"))
 var up = keyboard_check(vk_shift) - keyboard_check(vk_space)
 
-x += right * lengthdir_x(spd, radtodeg(azimuth)) + forward * lengthdir_x(spd, radtodeg(azimuth-pi/2))
-y += right * lengthdir_y(spd, radtodeg(azimuth)) + forward * lengthdir_y(spd, radtodeg(azimuth-pi/2))
-z += up * spd/2
+x += (right * lengthdir_x(spd, radtodeg(azimuth)) + forward * lengthdir_x(spd, radtodeg(azimuth-pi/2))) * delta_time * 0.00006
+y += (right * lengthdir_y(spd, radtodeg(azimuth)) + forward * lengthdir_y(spd, radtodeg(azimuth-pi/2))) * delta_time * 0.00006
+z += (up * spd/2) * delta_time * 0.00006
 
 
 // Set view matrix

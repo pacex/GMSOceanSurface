@@ -1,5 +1,5 @@
 
-function ScrSetShWaterSurface(){
+function ScrSetShWaterSurface(binary, rayMarchDistance, rayMarchStep){
 
 	shader_set(ShWaterSurface)
 	
@@ -19,6 +19,11 @@ function ScrSetShWaterSurface(){
 	shader_set_uniform_f_array(shader_get_uniform(ShWaterSurface, "ufKx"), kx)
 	shader_set_uniform_f_array(shader_get_uniform(ShWaterSurface, "uKy"), ky)
 	shader_set_uniform_f_array(shader_get_uniform(ShWaterSurface, "ufKy"), ky)
+	
+	// REFLECTION PARAMETERS
+	shader_set_uniform_i(shader_get_uniform(ShWaterSurface, "ufBinary"), binary)
+	shader_set_uniform_f(shader_get_uniform(ShWaterSurface, "ufRayMarchDistance"), rayMarchDistance)
+	shader_set_uniform_f(shader_get_uniform(ShWaterSurface, "ufRayMarchStep"), rayMarchStep)
 	
 	// LIGHTING PARAMETERS
 	shader_set_uniform_f_array(shader_get_uniform(ShWaterSurface, "ufView"), view)

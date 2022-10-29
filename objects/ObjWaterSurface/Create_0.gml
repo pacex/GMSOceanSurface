@@ -6,6 +6,11 @@ surfacePlane = ScrVertBufCreatePlane(256, 512)
 slider_windSpeed = noone;
 slider_direction = noone;
 
+// Reflection paramters
+checkBox_bin = noone
+slider_dist = noone
+slider_step = noone
+
 globalvar amplitudes, kx, ky, NUM_WAVES;
 NUM_WAVES = 64;
 
